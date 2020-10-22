@@ -11,12 +11,12 @@ extern "C" {
 /* Compiler Related Definitions */
 #if defined(__CC_ARM) || defined(__CLANG_ARM)           /* ARM Compiler */
     #include <stdarg.h>
-    #define SECTION(x)                  __attribute__((section(x)))
+    #define AUTO_INIT_SECTION(x)        __attribute__((section(x)))
                    __attribute__((unused))
     #define AUTO_INIT_USED              __attribute__((used))
 #elif defined (__IAR_SYSTEMS_ICC__)     /* for IAR Compiler */
     #include <stdarg.h>
-    #define SECTION(x)                  @ x
+    #define AUTO_INIT_SECTION(x)        @ x
     #define AUTO_INIT_USED              __root
 #elif defined (__GNUC__)                /* GNU GCC Compiler */
     #ifdef AUTO_INIT_USING_NEWLIB
@@ -29,24 +29,24 @@ extern "C" {
         #define va_end(v)               __builtin_va_end(v)
         #define va_arg(v,l)             __builtin_va_arg(v,l)
     #endif
-    #define SECTION(x)                  __attribute__((section(x)))
+    #define AUTO_INIT_SECTION(x)        __attribute__((section(x)))
                    __attribute__((unused))
     #define AUTO_INIT_USED              __attribute__((used))
 #elif defined (__ADSPBLACKFIN__)        /* for VisualDSP++ Compiler */
     #include <stdarg.h>
-    #define SECTION(x)                  __attribute__((section(x)))
+    #define AUTO_INIT_SECTION(x)        __attribute__((section(x)))
                    __attribute__((unused))
     #define AUTO_INIT_USED              __attribute__((used))
 #elif defined (_MSC_VER)
     #include <stdarg.h>
-    #define SECTION(x)
+    #define AUTO_INIT_SECTION(x)
     #define AUTO_INIT_USED
 #elif defined (__TI_COMPILER_VERSION__)
     #include <stdarg.h>
     /* The way that TI compiler set section is different from other(at least
      * GCC and MDK) compilers. See ARM Optimizing C/C++ Compiler 5.9.3 for more
      * details. */
-    #define SECTION(x)
+    #define AUTO_INIT_SECTION(x)
     #define AUTO_INIT_USED
 #else
     #error not supported tool chain
@@ -58,7 +58,7 @@ typedef int (*init_fn_t)(void);
     #define INIT_EXPORT(fn, level)
 #else
     #define INIT_EXPORT(fn, level)                                                       \
-        AUTO_INIT_USED const init_fn_t __auto_init_##fn SECTION(".rti_fn."level) = fn
+        AUTO_INIT_USED const init_fn_t __auto_init_##fn AUTO_INIT_SECTION(".rti_fn."level) = fn
 #endif
 #else
 #define INIT_EXPORT(fn, level)
